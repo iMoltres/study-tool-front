@@ -1,0 +1,19 @@
+<div style="margin: 1rem;"></div>
+
+<div class="all-content">
+    <div class="box">
+        <p class="font-2">Reviews:</p>
+        <p class="font-2">
+            Santa Claus: "This got my students grades up from a 70 to a 90
+            percent. Overflow Studies is a ten out of ten. "
+        </p>
+        <p class="font-2">
+            Julia Scissors: "My son has been extremely organized and focused
+            on his studies ever since he started using this website. "
+        </p>
+        <p class="font-2">
+            John Brown: "I didn't have a good education so it was hard for
+            me to teach my child. This app made my life much easier "
+        </p>
+    </div>
+</div>
