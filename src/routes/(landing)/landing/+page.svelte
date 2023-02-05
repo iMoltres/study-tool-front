@@ -8,7 +8,7 @@
 
             <div class="profile" style="justify-content: center;">
                 <button class="sign-up">Sign Up</button>
-                <button class="log-in">Log In</button>
+                <button class="sign-up">Log In</button>
             </div>
         </div>
     </div>
@@ -55,19 +55,6 @@
         margin-right: 2rem;
     }
     .sign-up {
-        background-color: #dafad4;
-        border: none;
-        border-radius: 10px;
-        padding: 1rem;
-        font-size: 15px;
-        font-family: Manrope;
-        color: #2a5e1a;
-        font-weight: 900;
-        text-shadow: 0px 0.5px #2a5e1a;
-        margin-right: 15px;
-        transition: 0.2s;
-    }
-    .log-in {
         background-color: #dafad4;
         border: none;
         border-radius: 10px;

@@ -1,11 +1,14 @@
 <script>
     import Row from "$lib/components/mainpage/Row.svelte";
     import CompactRow from "$lib/components/gradespage/CompactRow.svelte";
+    import AddGrade from "$lib/components/gradespage/AddGrade.svelte";
 
     let compact = false;
+    let addGrade = true;
+
 </script>
 
-<div class="main">
+<div class="main" class:opacity={addGrade == true}>
     <p class="font-3">Your Grades</p>
     <!-- Create 3 boxes that has a drop shadow -->
     <div style="display: flex; align-items: center;">
@@ -20,6 +23,12 @@
             />
             <span class="slider round" />
         </label>
+    </div>
+    
+    <div style="display: flex; align-items: center;">
+        <button class="my-button" on:click={() => {
+            window.location.href = "/grades";
+        }}>Add a Grade</button>
     </div>
     <div style="margin: 1rem" />
     <div class="main-box">
@@ -59,7 +68,15 @@
     </div>
 </div>
 
+{#if addGrade}
+    <AddGrade />
+{/if}
+
 <style>
+    .opacity {
+        opacity: 15%;
+    }
+
     /* The switch - the box around the slider */
     .switch {
         position: relative;
@@ -158,6 +175,24 @@
         margin-top: 1rem;
         margin-bottom: 1rem;
     }
+    .my-button {
+        background-color: #DAFAD4;
+        border: none;
+        border-radius: 10px;
+        padding: 1rem;
+        font-size: 20px;
+        font-family: Manrope;
+        color: #2A5E1A;
+        font-weight: 900;
+        text-shadow: 0px 0.5px #2A5E1A;
+        width: 12.5%;
+        transition: 0.2s;
+    }
+    .my-button:hover {
+        background-color: #c4e3bf;
+        cursor: pointer;
+        transition: 0.2s;
+    }
 
     @media (prefers-color-scheme: dark) {
         :global(body) {
@@ -180,6 +215,24 @@
             margin: 0;
             padding: 0;
             background-color: #3c505d;
+        }
+        .my-button {
+            background-color: #2A5E1A;
+            border: none;
+            border-radius: 10px;
+            padding: 1rem;
+            font-size: 20px;
+            font-family: Manrope;
+            color: #DAFAD4; 
+            font-weight: 900;
+            text-shadow: 0px 0.5px #2A5E1A;
+            width: 12.5%;
+            transition: 0.2s;
+        }
+        .my-button:hover {
+            background-color: #214a14;
+            cursor: pointer;
+            transition: 0.2s;
         }
     }
 </style>

@@ -16,27 +16,24 @@
             <p class="font-2" style="color: red">*</p>
             <p class="font-2">&nbsp Grade Level:</p>
         </div>
-    
         <div style="display: flex">
             <p class="font-2" style="color: red">*</p>
             <p class="font-2">&nbsp Email:</p>
         </div>
+        <div style="display: flex">
+            <p class="font-2" style="color: red">*</p>
+            <p class="font-2">&nbsp Password:</p>
+        </div>
+        <div style="display: flex">
+            <p class="font-2" style="color: red">*</p>
+            <p class="font-2">&nbsp Confirm Password:</p>
+        </div>
+
     </div>
 </div>
 <style>
     :global(body) {
         background-color: #f5f5f5;
-    }
-    .profile {
-        background-color: white;
-        padding-left: 1.5rem;
-        padding-right: 1.5rem;
-        border-radius: 10px;
-        display: flex;
-        margin-top: 0;
-        align-items: center;
-        justify-content: center;
-        height: 90px;
     }
     .home {
         background-color: #dafad4;
