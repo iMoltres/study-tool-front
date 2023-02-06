@@ -46,6 +46,8 @@
         align-items: center;
         margin-left: 1.5rem;
         margin-right: 1.5rem;
+        margin-top: -0.5rem;
+        margin-bottom: -0.5rem;
     }
     .info-alt {
         display: flex;

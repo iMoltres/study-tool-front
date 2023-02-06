@@ -1,8 +1,46 @@
-<script>
+<script lang="ts">
     import Row from "$lib/components/mainpage/Row.svelte";
     import CompactRow from "$lib/components/gradespage/CompactRow.svelte";
+    import { userEmail } from "../../../stores.js";
+    import { get } from "svelte/store";
 
     let compact = false;
+
+    function getRandomIcon() {
+        let icons = [
+            "pencil",
+            "desktop",
+            "money-check-dollar",
+            "earth",
+            "book-open",
+            "graduation-cap",
+            "laptop",
+            "calculator"
+        ];
+        return icons[Math.floor(Math.random() * icons.length)]
+    }
+
+    async function getAssignments() {
+        let r = await fetch(
+            `http://10.104.148.66:8000/user/${get(userEmail)}/assignments`,
+            {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            }
+        );
+        let data = await r.json();
+        let assignments = data["assignments"];
+        //sort assignments by eta highest to lowest
+        assignments.sort((a: Object, b: Object) => {
+            return (b as any)["eta"] - (a as any)["eta"];
+        });
+
+        console.log(assignments);
+        return assignments;
+    }
+    
 </script>
 
 <div class="main">
@@ -21,54 +59,40 @@
             <span class="slider round" />
         </label>
     </div>
+    <div style="display: flex; align-items: center;">
+        <button
+            class="my-button"
+            on:click={() => {}}>Add a Task</button
+        >
+    </div>
     <div style="margin: 1rem" />
     <div class="main-box">
         <div class="box">
-            {#if compact}
-                <CompactRow
-                    name="Ch 21 Study Qs"
-                    percent="null"
-                    eta="90"
-                    subject="null"
-                />
-                <div class="compact-divider" />
-                <CompactRow
-                    name="Business Model Canvas"
-                    percent="null"
-                    eta="60"
-                    subject="null"
-                />
-                <div class="compact-divider" />
-                <CompactRow
-                    name="Jimmy Jones Project"
-                    percent="null"
-                    eta="180"
-                    subject="null"
-                />
-            {:else}
-                <div class="content">
-                    <Row
-                        icon="earth"
-                        name="Ch 21 Study Qs"
-                        percent="null"
-                        eta="90"
-                    />
-                    <div class="divider" />
-                    <Row
-                        icon="money-check-dollar"
-                        name="Business Model Canvas"
-                        percent="null"
-                        eta="60"
-                    />
-                    <div class="divider" />
-                    <Row
-                        icon="desktop"
-                        name="Jimmy Jones Project"
-                        percent="null"
-                        eta="180"
-                    />
-                </div>
-            {/if}
+            {#await getAssignments()}
+                <div />
+            {:then assignments}
+                {#if compact}
+                    {#each assignments as [assignmentName, vals]}
+                        <CompactRow
+                            name={assignmentName}
+                            percent="null"
+                            eta={vals.eta.toString()}
+                            subject="null"
+                        />
+                    {/each}
+                {:else}
+                    <div class="content">
+                        {#each assignments as [assignmentName, vals]}
+                            <Row
+                                icon={getRandomIcon()}
+                                name={assignmentName}
+                                percent="null"
+                                eta={vals.eta.toString()}
+                            />
+                        {/each}
+                    </div>
+                {/if}
+            {/await}
         </div>
     </div>
 </div>
@@ -172,6 +196,24 @@
         margin-top: 1rem;
         margin-bottom: 1rem;
     }
+    .my-button {
+        background-color: #dafad4;
+        border: none;
+        border-radius: 10px;
+        padding: 1rem;
+        font-size: 20px;
+        font-family: Manrope;
+        color: #2a5e1a;
+        font-weight: 900;
+        text-shadow: 0px 0.5px #2a5e1a;
+        width: 12.5%;
+        transition: 0.2s;
+    }
+    .my-button:hover {
+        background-color: #c4e3bf;
+        cursor: pointer;
+        transition: 0.2s;
+    }
 
     @media (prefers-color-scheme: dark) {
         :global(body) {
@@ -194,6 +236,24 @@
             margin: 0;
             padding: 0;
             background-color: #3c505d;
+        }
+        .my-button {
+            background-color: #2a5e1a;
+            border: none;
+            border-radius: 10px;
+            padding: 1rem;
+            font-size: 20px;
+            font-family: Manrope;
+            color: #dafad4;
+            font-weight: 900;
+            text-shadow: 0px 0.5px #2a5e1a;
+            width: 12.5%;
+            transition: 0.2s;
+        }
+        .my-button:hover {
+            background-color: #214a14;
+            cursor: pointer;
+            transition: 0.2s;
         }
     }
 </style>

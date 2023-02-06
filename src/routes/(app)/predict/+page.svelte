@@ -1,12 +1,11 @@
 <script lang="ts">
-    import Row from "$lib/components/mainpage/Row.svelte";
-    import CompactRow from "$lib/components/gradespage/CompactRow.svelte";
     import { get } from "svelte/store";
     import { userEmail } from "../../../stores";
 
     let compact = false;
-    let response: string = "";
+    let percentage: string;
     let question: string;
+    let reasoning: string;
 
     // async function loadData() {
     //     let r = await fetch(
@@ -26,38 +25,39 @@
     async function askQuestion() {
         if (question == null || question == undefined || question == "") return;
 
-        response = "Waiting for response...";
+        reasoning = "Waiting for a response..."
 
         let r = await fetch(
-            `http://10.104.148.66:8000/questionHint`,
+            `http://10.104.148.66:8000/predictGrade`,
             {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                    question: question,
-                    email: get(userEmail)
+                    email: get(userEmail),
+                    assignment: question
                 }),
             }
         );
 
         let data = await r.json();
-        response = data["questionHint"]
+        percentage = data["random"]["percentage"]
+        reasoning = data["random"]["reason"]
 
         question = "";
     }
 </script>
 
 <div class="main">
-    <p class="font-3">Ask for a Tip Below</p>
+    <p style="font-size: 22.5px">This tool will predict a grade for a response. Include the question.</p>
     <!-- Create 3 boxes that has a drop shadow -->
     <div style="margin: 1rem" />
     <div class="main-box" style="display: flex; justify-content: flex-start">
         <div style="width: 47%">
             <textarea
                 class="text-area"
-                placeholder="Enter your question here"
+                placeholder="Enter your response here"
                 bind:value={question}
             />
             <div style="margin: 1rem;"></div>
@@ -72,7 +72,17 @@
         <div style="margin-left: 2rem; margin-right: 2rem;" />
         <div style="width: 47%;">
             <p style="font-size: 25px;">Study Buddy's Response</p>
-            <p>{response}</p>
+            {#if percentage != undefined}
+                <p>Grade: {percentage}</p>
+                <div style="margin: 0.5rem;"></div>
+            {/if}
+            {#if reasoning != undefined}
+                {#if reasoning == "Waiting for a response..."}
+                    <p>{reasoning}</p>
+                {:else}
+                    <p>Reasoning: {reasoning}</p>
+                {/if}
+            {/if}
         </div>
     </div>
 </div>
@@ -82,7 +92,7 @@
         border-radius: 10px;
         width: 100%;
         resize: none;
-        height: 50vh;
+        height: 55vh;
         background-color: #20323f;
         border: none;
         font-size: 25px;
@@ -91,10 +101,6 @@
         padding: 1rem;
     }
     p {
-        font-family: Manrope;
-    }
-    .font-3 {
-        font-size: 35px;
         font-family: Manrope;
     }
     .main {

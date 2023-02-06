@@ -1,82 +1,118 @@
-<script>
+<script lang="ts">
     import Row from "$lib/components/mainpage/Row.svelte";
     import CompactRow from "$lib/components/gradespage/CompactRow.svelte";
     import AddGrade from "$lib/components/gradespage/AddGrade.svelte";
+    import { addGrade } from "../../../stores";
+    import { onDestroy } from "svelte";
+    import { userEmail } from "../../../stores";
+    import { get } from "svelte/store";
+    import { onMount } from "svelte";
+    import { goto } from "$app/navigation";
 
     let compact = false;
-    let addGrade = true;
+    let toAdd: boolean;
 
+    addGrade.subscribe((value) => {
+        toAdd = value;
+    });
+
+    onDestroy(() => {
+        addGrade.set(false);
+    });
+
+    let listOfGrades: Object;
+
+    async function loadData() {
+        let r = await fetch(
+            `http://10.104.148.66:8000/user/${get(userEmail)}/grades`,
+            {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            }
+        );
+        let data = await r.json();
+        console.log(data);
+        listOfGrades = data["grades"];
+    }
 </script>
 
-<div class="main" class:opacity={addGrade == true}>
-    <p class="font-3">Your Grades</p>
-    <!-- Create 3 boxes that has a drop shadow -->
-    <div style="display: flex; align-items: center;">
-        <p style="font-size: 20px;">Enable compact mode:</p>
-        <div style="margin: 0.5rem" />
-        <label class="switch">
-            <input
-                type="checkbox"
+{#await loadData()}
+    <div />
+{:then}
+    <div class="main" class:opacity={toAdd}>
+        <p class="font-3">Your Grades</p>
+        <!-- Create 3 boxes that has a drop shadow -->
+        <div style="display: flex; align-items: center;">
+            <p style="font-size: 20px;">Enable compact mode:</p>
+            <div style="margin: 0.5rem" />
+            <label class="switch">
+                <input
+                    type="checkbox"
+                    on:click={() => {
+                        compact = !compact;
+                    }}
+                />
+                <span class="slider round" />
+            </label>
+        </div>
+
+        <div style="display: flex; align-items: center;">
+            <button
+                class="my-button"
                 on:click={() => {
-                    compact = !compact;
-                }}
-            />
-            <span class="slider round" />
-        </label>
-    </div>
-    
-    <div style="display: flex; align-items: center;">
-        <button class="my-button" on:click={() => {
-            window.location.href = "/grades";
-        }}>Add a Grade</button>
-    </div>
-    <div style="margin: 1rem" />
-    <div class="main-box">
-        <div class="box">
-            {#if compact}
-                <CompactRow
-                    name="Lord of the Flies: Essay"
-                    percent="87"
-                    eta="null"
-                    subject="null"
-                />
-                <div class="compact-divider" />
-                <CompactRow
-                    name="Chapter 6 Day 2"
-                    percent="100"
-                    eta="null"
-                    subject="null"
-                />
-            {:else}
-                <div class="content">
-                    <Row
-                        icon="pencil"
-                        name="Lord of the Flies: Essay"
-                        percent="87"
-                        eta="null"
-                    />
-                    <div class="divider" />
-                    <Row
-                        icon="desktop"
-                        name="Chapter 6 Day 2"
-                        percent="100"
-                        eta="null"
-                    />
-                </div>
-            {/if}
+                    addGrade.set(!toAdd);
+                }}>Add a Grade</button
+            >
+            <div style="margin: 0.5rem"></div>
+            <button
+                class="my-button"
+                style="width: fit-content"
+                on:click={() => {
+                    goto("/predict", { replaceState: false });
+                }}>Predict a Grade</button
+            >
+        </div>
+        <div style="margin: 1rem" />
+        <div class="main-box">
+            <div class="box">
+                {#if compact}
+                    {#each Object.entries(listOfGrades) as [name, grade]}
+                        <CompactRow
+                            {name}
+                            percent={(grade * 100).toString()}
+                            eta="null"
+                            subject="null"
+                        />
+                    {/each}
+                {:else}
+                    <div class="content">
+                        {#each Object.entries(listOfGrades) as [name, grade]}
+                            <Row
+                                icon="pencil"
+                                {name}
+                                percent={(grade * 100).toString()}
+                                eta="null"
+                            />
+                            
+                            <div style="margin: 1rem;"></div>
+                        {/each}
+                    </div>
+                {/if}
+            </div>
         </div>
     </div>
-</div>
 
-{#if addGrade}
-    <AddGrade />
-{/if}
+    {#if toAdd}
+        <AddGrade {listOfGrades} />
+    {/if}
+{/await}
 
 <style>
     .opacity {
         opacity: 15%;
     }
-
     /* The switch - the box around the slider */
     .switch {
         position: relative;
@@ -142,17 +178,6 @@
     p {
         font-family: Manrope;
     }
-    .divider {
-        margin: 0.5rem;
-        height: 1.5px;
-        background-color: #dddddd;
-    }
-    .compact-divider {
-        height: 1.5px;
-        margin: 0;
-        padding: 0;
-        background-color: #dddddd;
-    }
     .box {
         width: 100%;
         height: fit-content;
@@ -176,15 +201,15 @@
         margin-bottom: 1rem;
     }
     .my-button {
-        background-color: #DAFAD4;
+        background-color: #dafad4;
         border: none;
         border-radius: 10px;
         padding: 1rem;
         font-size: 20px;
         font-family: Manrope;
-        color: #2A5E1A;
+        color: #2a5e1a;
         font-weight: 900;
-        text-shadow: 0px 0.5px #2A5E1A;
+        text-shadow: 0px 0.5px #2a5e1a;
         width: 12.5%;
         transition: 0.2s;
     }
@@ -206,26 +231,16 @@
             border-radius: 10px;
             background-color: #20323f;
         }
-        .divider {
-            height: 1.5px;
-            background-color: #3c505d;
-        }
-        .compact-divider {
-            height: 1.5px;
-            margin: 0;
-            padding: 0;
-            background-color: #3c505d;
-        }
         .my-button {
-            background-color: #2A5E1A;
+            background-color: #2a5e1a;
             border: none;
             border-radius: 10px;
             padding: 1rem;
             font-size: 20px;
             font-family: Manrope;
-            color: #DAFAD4; 
+            color: #dafad4;
             font-weight: 900;
-            text-shadow: 0px 0.5px #2A5E1A;
+            text-shadow: 0px 0.5px #2a5e1a;
             width: 12.5%;
             transition: 0.2s;
         }

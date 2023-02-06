@@ -13,7 +13,7 @@
         </p>
         <p class="font-2">
             John Brown: "I didn't have a good education so it was hard for
-            me to teach my child. This app made my life much easier "
+            me to teach my child. This app made my life much easier. "
         </p>
     </div>
 </div>
